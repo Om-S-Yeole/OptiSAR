@@ -45,9 +45,16 @@ class PairIterator:
     def __init__(self, it):
         self.it = it
         self.sar_transform = T.Compose(
-            [T.Grayscale(), T.ToTensor(), lambda x: x / 255.0]
+            [
+                T.Resize(size=(256, 256)),
+                T.Grayscale(),
+                T.ToTensor(),
+                lambda x: x / 255.0,
+            ]
         )
-        self.rgb_transform = T.Compose([T.PILToTensor(), lambda x: x / 255.0])
+        self.rgb_transform = T.Compose(
+            [T.Resize(size=(256, 256)), T.PILToTensor(), lambda x: x / 255.0]
+        )
 
     def __iter__(self):
         return self
