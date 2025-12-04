@@ -1,0 +1,10 @@
+# Dataset
+Sentinel_SAR_dataset/
+
+# Virtual environment
+venv/
+myenv/
+pytorch_env/
+
+# pycache
+__pycache__/

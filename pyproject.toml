@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "OptiSAR"
+version = "0.1"
+description = "A CycleGAN that efficiently do image to image translation of Synthetic Aperture Radar (SAR) images of Sentinel satellite to optical RGB images."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Om Yeole" }
+]
+requires-python = ">=3.12"
+
+dependencies = [
+    "torch==2.9.1+cu128",
+    "torchvision==0.24.1+cu128",
+    "numpy==2.3.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "pre-commit",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
