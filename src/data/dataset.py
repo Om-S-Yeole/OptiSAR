@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import torch
 from PIL import Image
 from torch.utils.data import IterableDataset
 from torchvision.transforms import transforms as T
@@ -46,14 +47,19 @@ class PairIterator:
         self.it = it
         self.sar_transform = T.Compose(
             [
-                T.Resize(size=(256, 256)),
+                T.Resize((256, 256)),
                 T.Grayscale(),
-                T.ToTensor(),
-                lambda x: x / 255.0,
+                T.ToTensor(),  # [0,1]
+                T.Normalize(0.5, 0.5),  # [-1,1]
             ]
         )
+
         self.rgb_transform = T.Compose(
-            [T.Resize(size=(256, 256)), T.PILToTensor(), lambda x: x / 255.0]
+            [
+                T.Resize((256, 256)),
+                T.ToTensor(),  # [0,1]
+                T.Normalize(0.5, 0.5),  # [-1,1]
+            ]
         )
 
     def __iter__(self):
@@ -125,5 +131,31 @@ class OptiSARDataset(IterableDataset):
         self.train_rgb_dir = self.root_dir / train_rgb
 
     def __iter__(self):
-        with (os.scandir(self.train_sar_dir) as it_sar,):
-            yield from PairIterator(it_sar)
+        # with (
+        #     os.scandir(self.train_sar_dir) as it_sar,
+        # ):
+        #     yield from PairIterator(it_sar)
+        worker_info = torch.utils.data.get_worker_info()
+
+        # List all SAR files once
+        all_files = list(os.scandir(self.train_sar_dir))
+
+        if worker_info is None:
+            # Single-process (no num_workers)
+            start = 0
+            end = len(all_files)
+        else:
+            # Multi-worker
+            worker_id = worker_info.id
+            num_workers = worker_info.num_workers
+
+            # Shard the file list
+            per_worker = len(all_files) // num_workers
+            start = worker_id * per_worker
+            end = start + per_worker if worker_id != num_workers - 1 else len(all_files)
+
+        # Slice the files for this worker
+        file_slice = all_files[start:end]
+
+        # Return iterator over only this slice
+        return PairIterator(iter(file_slice))

@@ -1,0 +1,8 @@
+data:
+  root_name: Sentinel_SAR_dataset
+  train_dir:
+    - train_sar
+    - train_rgb
+  test_dir:
+    - test_sar
+    - test_rgb
