@@ -16,7 +16,7 @@ torch.backends.cudnn.benchmark = True
 
 
 def train_model(
-    batch_size: int = 2,
+    batch_size: int = 8,
     epochs: int = 10,
     real_label: float = 0.9,
     fake_label: float = 0.0,
@@ -45,9 +45,7 @@ def train_model(
 ):
     use_amp: bool = False  # Weather to use autocast and Gradscaler or not
     if torch.cuda.is_available():
-        use_amp = (
-            False  # Training is faster when autocast is not used. I don't know why
-        )
+        use_amp = True  # Training is faster when autocast is not used. I don't know why
         torch.set_default_device("cuda")
     else:
         torch.set_default_device("cpu")
