@@ -253,7 +253,7 @@ def train_model(
             scaler.step(optimizer_F)
             scaler.update()
 
-            if dataloader_idx % 50 == 0:
+            if dataloader_idx % 100 == 0:
                 print("Working...")
 
         scheduler_G.step()
